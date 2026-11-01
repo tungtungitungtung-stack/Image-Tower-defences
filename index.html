@@ -3,91 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Image Tower Defence - Arena</title>
+<title>Image Tower Defence</title>
 <style>
-  * { box-sizing: border-box; }
-  body { margin:0; min-height:100vh; background:#171b25; color:#f4f6fb; font-family:Arial,sans-serif; display:flex; flex-direction:column; align-items:center; padding:24px 12px; }
-  h1 { margin:0 0 8px; font-size:24px; }
-  .hint { color:#b8c0d2; margin:0 0 16px; font-size:14px; text-align:center; }
-  .layout { display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
-  #arena { width:520px; height:520px; max-width:calc(100vw - 24px); max-height:calc(100vw - 24px); aspect-ratio:1; position:relative; overflow:hidden; border:1px solid #e7eaf0; background-color:#6b8f52; background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px); background-size:26px 26px; box-shadow:0 12px 36px #0007; }
-  .unit { position:absolute; width:100px; height:60px; object-fit:contain; user-select:none; pointer-events:none; filter:drop-shadow(0 3px 2px #0008); }
-  .panel { width:250px; background:#242b39; border:1px solid #3a4559; border-radius:12px; padding:16px; }
-  button { width:100%; border:0; border-radius:8px; padding:12px; color:white; background:#3984ed; font-weight:bold; font-size:15px; cursor:pointer; margin:6px 0 12px; }
-  button:hover { background:#5596f3; }
-  button.secondary { background:#4a5568; }
-  label { display:block; color:#c6cede; font-size:13px; margin:8px 0 5px; }
-  input { width:100%; padding:9px; border-radius:7px; border:1px solid #536078; color:white; background:#151b27; }
-  .small { color:#aeb8ca; font-size:12px; line-height:1.5; }
-  #count { font-weight:bold; color:#9dc4ff; }
-  .money { margin:4px 0 8px; font-size:18px; font-weight:bold; color:#ffd66b; }
-  .money strong { font-size:24px; }
-  @media (max-width:560px) { .panel { width:min(520px,calc(100vw - 24px)); } }
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#171b25;color:#f4f6fb;font-family:Arial,sans-serif;display:flex;flex-direction:column;align-items:center;padding:24px 12px}h1{margin:0 0 8px;font-size:24px}.hint{color:#b8c0d2;margin:0 0 16px;font-size:14px;text-align:center}.layout{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+#arena{width:520px;height:520px;max-width:calc(100vw - 24px);max-height:calc(100vw - 24px);aspect-ratio:1;position:relative;overflow:hidden;border:1px solid #e7eaf0;background-color:#6b8f52;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:26px 26px;box-shadow:0 12px 36px #0007}
+.unit{position:absolute;object-fit:contain;user-select:none;pointer-events:none;filter:drop-shadow(0 3px 2px #0008)}.man{width:100px;height:60px}.rat{width:48px;height:36px}
+.hp{position:absolute;z-index:4;transform:translateX(-50%);font-size:10px;line-height:12px;font-weight:bold;color:#fff;text-shadow:0 1px 2px #000,1px 0 #000,-1px 0 #000;pointer-events:none;white-space:nowrap}
+#ratGate{position:absolute;z-index:3;left:50%;top:5px;transform:translateX(-50%);width:42px;height:42px;border-radius:50%;background:#050505;border:2px solid #333;box-shadow:0 2px 6px #0009}
+.panel{width:250px;background:#242b39;border:1px solid #3a4559;border-radius:12px;padding:16px}button{width:100%;border:0;border-radius:8px;padding:12px;color:white;background:#3984ed;font-weight:bold;font-size:15px;cursor:pointer;margin:6px 0 12px}button:hover{background:#5596f3}button:disabled{background:#596273;cursor:not-allowed}button.secondary{background:#4a5568}.small{color:#aeb8ca;font-size:12px;line-height:1.5}#count{font-weight:bold;color:#9dc4ff}.money{margin:4px 0 8px;font-size:18px;font-weight:bold;color:#ffd66b}.money strong{font-size:24px}@media(max-width:560px){.panel{width:min(520px,calc(100vw - 24px))}}
 </style>
 </head>
 <body>
 <h1>IMAGE TOWER DEFENCE</h1>
-<p class="hint">520 × 520 경기장 · 소환 이미지 100 × 60</p>
+<p class="hint">520 × 520 경기장 · 남자와 쥐가 서로 싸워!</p>
 <div class="layout">
-  <div id="arena" aria-label="게임 경기장"></div>
-  <section class="panel">
-    <div class="money">보유 원: <strong id="money">0</strong> / 1000원</div>
-    <button id="spawn">남자 소환 (10원)</button>
-    <button id="clear" class="secondary">모두 제거</button>
-    <label for="imageUrl">소환할 이미지의 직접 이미지 주소</label>
-    <input id="imageUrl" type="url" value="https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png">
-    <p class="small">1초마다 10원이 자동으로 쌓여. 최대 보유 금액은 1000원이야. 남자 한 명을 소환할 때마다 10원이 사용돼.</p>
-    <p>소환된 이미지: <span id="count">0</span></p>
-    <p class="small">이미지들은 경기장 안에서 자동으로 움직이고, 테두리에 닿으면 방향을 바꿔.</p>
-  </section>
+<div id="arena" aria-label="게임 경기장"><div id="ratGate" title="쥐 출구"></div></div>
+<section class="panel">
+<div class="money">보유 원: <strong id="money">0</strong> / 1000원</div>
+<button id="spawn">남자 소환 (10원)</button>
+<button id="clear" class="secondary">모두 제거</button>
+<p class="small">0.1초마다 1원씩 획득해. 최대 1000원이며 남자 한 명 소환에 10원이 필요해.</p>
+<p>남자: 체력 10 · 공격력 1</p>
+<p>쥐: 체력 2 · 공격력 1 · 1초마다 출구에서 생성</p>
+<p>현재 유닛: <span id="count">0</span></p>
+<p class="small">체력은 각 유닛 위에 작게 표시돼. 같은 편끼리 부딪히면 밀려나고, 적과 부딪히면 서로 공격해.</p>
+</section>
 </div>
 <script>
 (() => {
-  const arena = document.getElementById('arena');
-  const spawnBtn = document.getElementById('spawn');
-  const clearBtn = document.getElementById('clear');
-  const imageInput = document.getElementById('imageUrl');
-  const countEl = document.getElementById('count');
-  const moneyEl = document.getElementById('money');
-  let money = 0;
-  function updateMoney(){ moneyEl.textContent = money; spawnBtn.disabled = money < 10; spawnBtn.textContent = money < 10 ? '남자 소환 (10원 필요)' : '남자 소환 (10원)'; }
-  setInterval(() => { money = Math.min(1000, money + 10); updateMoney(); }, 1000);
-  const units = [];
-  const SIZE_W = 100, SIZE_H = 60, SPEED = 85;
-  let last = performance.now();
-  function updateCount(){ countEl.textContent = units.length; }
-  function spawn(){
-    if (money < 10) return;
-    money -= 10;
-    updateMoney();
-    const img = document.createElement('img');
-    img.className = 'unit';
-    const src = imageInput.value.trim();
-    if (src) { img.src = src; img.alt = '소환된 유닛'; }
-    else {
-      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="60" viewBox="0 0 100 60"><ellipse cx="50" cy="51" rx="35" ry="6" fill="#000" opacity=".22"/><rect x="10" y="7" width="80" height="42" rx="10" fill="#e9edf4" stroke="#273247" stroke-width="3"/><text x="50" y="34" text-anchor="middle" font-size="13" font-family="Arial" font-weight="bold" fill="#273247">IMAGE</text></svg>');
-    }
-    const x = Math.random() * (520 - SIZE_W), y = Math.random() * (520 - SIZE_H), angle = Math.random() * Math.PI * 2;
-    arena.appendChild(img);
-    units.push({el:img,x,y,vx:Math.cos(angle)*SPEED,vy:Math.sin(angle)*SPEED});
-    updateCount();
+ const arena=document.getElementById('arena'),gate=document.getElementById('ratGate'),spawnBtn=document.getElementById('spawn'),clearBtn=document.getElementById('clear'),moneyEl=document.getElementById('money'),countEl=document.getElementById('count');
+ const MAN_SRC='https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png';
+ const RAT_PAGE='https://kor.pngtree.com/freepng/rat-mouse-animal_19778482.html';
+ const MAN_W=100,MAN_H=60,RAT_W=48,RAT_H=36,SPEED_MAN=85,SPEED_RAT=75;
+ let money=0,last=performance.now(),lastRat=performance.now(); const units=[];
+ function updateMoney(){moneyEl.textContent=money;spawnBtn.disabled=money<10;spawnBtn.textContent=money<10?'남자 소환 (10원 필요)':'남자 소환 (10원)'}
+ function updateCount(){countEl.textContent=units.length}
+ setInterval(()=>{money=Math.min(1000,money+1);updateMoney()},100);
+ function ratFallback(){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="96" height="72" viewBox="0 0 96 72"><path d="M18 47 Q-2 52 9 65" fill="none" stroke="#777" stroke-width="4" stroke-linecap="round"/><ellipse cx="48" cy="43" rx="29" ry="19" fill="#999"/><circle cx="71" cy="34" r="14" fill="#aaa"/><circle cx="64" cy="20" r="8" fill="#d99"/><circle cx="78" cy="22" r="7" fill="#d99"/><circle cx="76" cy="32" r="2.5" fill="#111"/><circle cx="85" cy="40" r="3" fill="#d77"/></svg>')}
+ function addUnit(type,x,y,vx,vy){
+  const el=document.createElement('img');el.className='unit '+type;el.alt=type==='man'?'남자':'쥐';
+  el.src=type==='man'?MAN_SRC:RAT_PAGE;
+  if(type==='rat')el.onerror=()=>{el.onerror=null;el.src=ratFallback()};
+  const hp=document.createElement('div');hp.className='hp';hp.textContent=type==='man'?'10':'2';arena.append(el,hp);
+  const u={type,el,hp,x,y,vx,vy,w:type==='man'?MAN_W:RAT_W,h:type==='man'?MAN_H:RAT_H,hp:type==='man'?10:2,damage:1,attackCooldown:0};
+  units.push(u);position(u);updateCount();return u;
+ }
+ function position(u){u.el.style.left=u.x+'px';u.el.style.top=u.y+'px';u.hp.style.left=(u.x+u.w/2)+'px';u.hp.style.top=Math.max(0,u.y-13)+'px'}
+ function spawnMan(){if(money<10)return;money-=10;updateMoney();const a=Math.random()*Math.PI*2;addUnit('man',Math.random()*420,Math.random()*460,Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
+ function spawnRat(){const x=236+Math.random()*0,y=48;addUnit('rat',x,y,(Math.random()-.5)*40,SPEED_RAT)}
+ function bounceWalls(u){if(u.x<0){u.x=0;u.vx=Math.abs(u.vx)}if(u.y<0){u.y=0;u.vy=Math.abs(u.vy)}if(u.x>520-u.w){u.x=520-u.w;u.vx=-Math.abs(u.vx)}if(u.y>520-u.h){u.y=520-u.h;u.vy=-Math.abs(u.vy)}}
+ function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
+ function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.hp<=0){u.el.remove();u.hpEl?.remove();u.hp.remove();units.splice(i,1)}}}
+ function tick(now){
+  const dt=Math.min((now-last)/1000,.04);last=now;
+  if(now-lastRat>=1000){spawnRat();lastRat=now}
+  for(const u of units){u.x+=u.vx*dt;u.y+=u.vy*dt;u.attackCooldown=Math.max(0,u.attackCooldown-dt);bounceWalls(u)}
+  // 모든 유닛은 서로 겹치지 않도록 밀어내고, 적끼리는 접촉 시 공격한다.
+  for(let i=0;i<units.length;i++)for(let j=i+1;j<units.length;j++){
+   const a=units[i],b=units[j];if(!overlaps(a,b))continue;
+   const dx=(a.x+a.w/2)-(b.x+b.w/2),dy=(a.y+a.h/2)-(b.y+b.h/2),dist=Math.hypot(dx,dy)||1;
+   const nx=dx/dist,ny=dy/dist,overlap=Math.min(a.x+a.w-b.x,b.x+b.w-a.x,a.y+a.h-b.y,b.y+b.h-a.y);
+   a.x+=nx*overlap*.25;a.y+=ny*overlap*.25;b.x-=nx*overlap*.25;b.y-=ny*overlap*.25;
+   if(a.type!==b.type){if(a.attackCooldown<=0){b.hp-=a.damage;a.attackCooldown=.65}if(b.attackCooldown<=0){a.hp-=b.damage;b.attackCooldown=.65}}
+   else {const av=a.vx*nx+a.vy*ny,bv=b.vx*nx+b.vy*ny;a.vx+=(bv-av)*nx*.8;a.vy+=(bv-av)*ny*.8;b.vx+=(av-bv)*nx*.8;b.vy+=(av-bv)*ny*.8}
   }
-  function tick(now){
-    const dt = Math.min((now-last)/1000, .04); last = now;
-    for(const u of units){
-      u.x += u.vx*dt; u.y += u.vy*dt;
-      if(u.x < 0){u.x=0;u.vx=Math.abs(u.vx);}
-      if(u.y < 0){u.y=0;u.vy=Math.abs(u.vy);}
-      if(u.x > 520-SIZE_W){u.x=520-SIZE_W;u.vx=-Math.abs(u.vx);}
-      if(u.y > 520-SIZE_H){u.y=520-SIZE_H;u.vy=-Math.abs(u.vy);}
-      u.el.style.left = u.x+'px'; u.el.style.top = u.y+'px';
-    }
-    updateMoney();
-  requestAnimationFrame(tick);
-  }
-  spawnBtn.addEventListener('click',spawn);
-  clearBtn.addEventListener('click',()=>{for(const u of units)u.el.remove();units.length=0;updateCount();});
-  requestAnimationFrame(tick);
+  for(const u of units){bounceWalls(u);position(u)}
+  removeDead();requestAnimationFrame(tick)
+ }
+ spawnBtn.addEventListener('click',spawnMan);
+ clearBtn.addEventListener('click',()=>{for(const u of units){u.el.remove();u.hp.remove()}units.length=0;updateCount()});
+ updateMoney();setInterval(()=>{spawnRat()},1000);requestAnimationFrame(tick);
 })();
 </script>
 </body>
