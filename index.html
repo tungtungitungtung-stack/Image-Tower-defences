@@ -37,7 +37,7 @@
  const MAN_SRC='https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png';
  const RAT_PAGE='https://kor.pngtree.com/freepng/rat-mouse-animal_19778482.html';
  const MAN_W=100,MAN_H=60,RAT_W=48,RAT_H=36,SPEED_MAN=85,SPEED_RAT=75;
- let money=0,last=performance.now(),lastRat=performance.now(),ratsKilled=0,catSpawned=false; const units=[];
+ let money=0,last=performance.now(),lastRat=performance.now(),lastCat=0,ratsKilled=0; const units=[];
  function updateMoney(){moneyEl.textContent=money;spawnBtn.disabled=money<10;spawnBtn.textContent=money<10?'남자 소환 (10원 필요)':'남자 소환 (10원)'}
  function updateCount(){countEl.textContent=units.length}
  setInterval(()=>{money=Math.min(1000,money+1);updateMoney()},100);
@@ -56,10 +56,11 @@
  function spawnCat(){const x=40+Math.random()*380,y=420+Math.random()*50;addUnit('cat',x,y,(Math.random()-.5)*SPEED_MAN,(Math.random()-.5)*SPEED_MAN)}
  function bounceWalls(u){if(u.x<0){u.x=0;u.vx=Math.abs(u.vx)}if(u.y<0){u.y=0;u.vy=Math.abs(u.vy)}if(u.x>520-u.w){u.x=520-u.w;u.vx=-Math.abs(u.vx)}if(u.y>520-u.h){u.y=520-u.h;u.vy=-Math.abs(u.vy)}}
  function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
- function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled;if(ratsKilled>=5&&!catSpawned){catSpawned=true;spawnCat()}}}}}
+ function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled}}}}
  function tick(now){
   const dt=Math.min((now-last)/1000,.04);last=now;
   if(now-lastRat>=1000){spawnRat();lastRat=now}
+  if(ratsKilled>=5&&now-lastCat>=2000){spawnCat();lastCat=now}
   for(const u of units){u.x+=u.vx*dt;u.y+=u.vy*dt;u.attackCooldown=Math.max(0,u.attackCooldown-dt);bounceWalls(u)}
   // 모든 유닛은 서로 겹치지 않도록 밀어내고, 적끼리는 접촉 시 공격한다.
   for(let i=0;i<units.length;i++)for(let j=i+1;j<units.length;j++){
@@ -67,7 +68,7 @@
    const dx=(a.x+a.w/2)-(b.x+b.w/2),dy=(a.y+a.h/2)-(b.y+b.h/2),dist=Math.hypot(dx,dy)||1;
    const nx=dx/dist,ny=dy/dist,overlap=Math.min(a.x+a.w-b.x,b.x+b.w-a.x,a.y+a.h-b.y,b.y+b.h-a.y);
    a.x+=nx*overlap*.25;a.y+=ny*overlap*.25;b.x-=nx*overlap*.25;b.y-=ny*overlap*.25;
-   if((a.type==='rat')!==(b.type==='rat')){if(a.attackCooldown<=0){b.health-=a.damage;a.attackCooldown=.65}if(b.attackCooldown<=0){a.health-=b.damage;b.attackCooldown=.65}}
+   if((a.type==='man')!==(b.type==='man')){if(a.attackCooldown<=0){b.health-=a.damage;a.attackCooldown=.65}if(b.attackCooldown<=0){a.health-=b.damage;b.attackCooldown=.65}}
    else {const av=a.vx*nx+a.vy*ny,bv=b.vx*nx+b.vy*ny;a.vx+=(bv-av)*nx*.8;a.vy+=(bv-av)*ny*.8;b.vx+=(av-bv)*nx*.8;b.vy+=(av-bv)*ny*.8}
   }
   for(const u of units){bounceWalls(u);position(u)}
