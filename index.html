@@ -78,7 +78,7 @@
   const dt=Math.min((now-last)/1000,.04);last=now;
   if(now-lastRat>=1000){spawnRat();lastRat=now}
   if(ratsKilled>=5&&now-lastCat>=2000){spawnCat();lastCat=now}
-  if(bearsKilled>=5&&now-lastBear>=3000){spawnBear();lastBear=now}
+  if(catsKilled>=3&&now-lastBear>=5000){spawnBear();lastBear=now}
   for(const u of units){u.x+=u.vx*dt;u.y+=u.vy*dt;u.attackCooldown=Math.max(0,u.attackCooldown-dt);u.swordCooldown=Math.max(0,u.swordCooldown-dt);u.barrierCooldown=Math.max(0,(u.barrierCooldown||0)-dt);u.castleCooldown=Math.max(0,(u.castleCooldown||0)-dt);if(u.type==='knight')u.swordAngle=(u.swordAngle+dt*5)%(Math.PI*2);if(u.type==='soldier'&&u.attackCooldown<=0){fireBullet(u);u.attackCooldown=.2}bounceWalls(u)}
   for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;if(BARRIER.active&&overlaps(enemy,BARRIER)){if(enemy.barrierCooldown<=0){BARRIER.health=Math.max(0,BARRIER.health-enemy.damage);enemy.barrierCooldown=enemy.type==='bear'?3:1;updateBarrier();if(BARRIER.health<=0){BARRIER.active=false;updateBarrier();updateMoney()}}const cx=enemy.x+enemy.w/2,cy=enemy.y+enemy.h/2,bx=BARRIER.x+BARRIER.w/2,by=BARRIER.y+BARRIER.h/2,dx=cx-bx,dy=cy-by;if(Math.abs(dx)>Math.abs(dy)){enemy.x=dx<0?BARRIER.x-enemy.w:BARRIER.x+BARRIER.w;enemy.vx=dx<0?-Math.abs(enemy.vx||SPEED_RAT):Math.abs(enemy.vx||SPEED_RAT)}else{enemy.y=dy<0?BARRIER.y-enemy.h:BARRIER.y+BARRIER.h;enemy.vy=dy<0?-Math.abs(enemy.vy||SPEED_RAT):Math.abs(enemy.vy||SPEED_RAT)}continue}if(overlaps(enemy,CASTLE)&&enemy.castleCooldown<=0){CASTLE.health=Math.max(0,CASTLE.health-enemy.damage);enemy.castleCooldown=enemy.type==='bear'?3:1;enemy.vy=-Math.abs(enemy.vy||SPEED_RAT);updateCastle()}}
   // 모든 유닛은 서로 겹치지 않도록 밀어내고, 적끼리는 접촉 시 공격한다.
