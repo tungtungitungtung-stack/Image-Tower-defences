@@ -72,7 +72,7 @@
  }
  spawnBtn.addEventListener('click',spawnMan);
  clearBtn.addEventListener('click',()=>{for(const u of units){u.el.remove();u.hp.remove()}units.length=0;updateCount()});
- updateMoney();setInterval(()=>{spawnRat()},1000);requestAnimationFrame(tick);
+ updateMoney();requestAnimationFrame(tick);
 })();
 </script>
 </body>
