@@ -28,15 +28,15 @@
 <p>기사: 체력 15 · 회전하는 칼 공격력 5 · 소환 비용 100원</p><p>군인: 체력 20 · 0.2초마다 총알 발사 · 총알 대미지 1 · 소환 비용 150원</p>
 <p>우리 성: 체력 500 · 경기장 아래쪽</p><p>성 보호 방벽: 가격 100원 · 체력 200</p>
 <p>쥐: 체력 2 · 공격력 1 · 1초마다 출구에서 생성</p>
-<p>고양이: 체력 5 · 공격력 3 · 쥐 5마리 처치 후 2초마다 등장</p><p>곰: 체력 20 · 3초마다 공격력 10 · 고양이 5마리 처치 후 5초마다 등장</p>
-<p>쥐 처치 수: <span id="ratKills">0</span> / 5</p><p>고양이 처치 수: <span id="catKills">0</span> / 5</p>
+<p>고양이: 체력 5 · 공격력 3 · 쥐 5마리 처치 후 2초마다 등장</p><p>곰: 체력 20 · 3초마다 공격력 10 · 곰 5마리 처치 후 3초마다 등장</p>
+<p>쥐 처치 수: <span id="ratKills">0</span> / 5</p><p>고양이 처치 수: <span id="catKills">0</span> / 5</p><p>곰 처치 수: <span id="bearKills">0</span> / 5</p>
 <p>현재 유닛: <span id="count">0</span></p>
 <p class="small">체력은 각 유닛 위에 작게 표시돼. 같은 편끼리 부딪히면 밀려나고, 적과 부딪히면 서로 공격해.</p>
 </section>
 </div>
 <script>
 (() => {
- const arena=document.getElementById('arena'),gate=document.getElementById('ratGate'),spawnBtn=document.getElementById('spawn'),knightBtn=document.getElementById('spawnKnight'),soldierBtn=document.getElementById('spawnSoldier'),barrierBtn=document.getElementById('buyBarrier'),clearBtn=document.getElementById('clear'),moneyEl=document.getElementById('money'),countEl=document.getElementById('count'),ratKillsEl=document.getElementById('ratKills'),catKillsEl=document.getElementById('catKills'),castleHpEl=document.getElementById('castleHp'),castleBarFill=document.getElementById('castleBarFill'),barrierEl=document.getElementById('castleBarrier'),barrierHpEl=document.getElementById('barrierHealth'),barrierBarFill=document.getElementById('barrierBarFill');
+ const arena=document.getElementById('arena'),gate=document.getElementById('ratGate'),spawnBtn=document.getElementById('spawn'),knightBtn=document.getElementById('spawnKnight'),soldierBtn=document.getElementById('spawnSoldier'),barrierBtn=document.getElementById('buyBarrier'),clearBtn=document.getElementById('clear'),moneyEl=document.getElementById('money'),countEl=document.getElementById('count'),ratKillsEl=document.getElementById('ratKills'),catKillsEl=document.getElementById('catKills'),bearKillsEl=document.getElementById('bearKills'),castleHpEl=document.getElementById('castleHp'),castleBarFill=document.getElementById('castleBarFill'),barrierEl=document.getElementById('castleBarrier'),barrierHpEl=document.getElementById('barrierHealth'),barrierBarFill=document.getElementById('barrierBarFill');
  const MAN_SRC='https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png';
  const KNIGHT_SRC='https://www.pngarts.com/files/1/Knight-PNG-Background-Image.png';
  const SOLDIER_SRC='https://pngimg.com/uploads/soldier/soldier_PNG16044.png';
@@ -44,7 +44,7 @@
  const MAN_W=100,MAN_H=60,KNIGHT_W=88,KNIGHT_H=88,SOLDIER_W=64,SOLDIER_H=64,RAT_W=48,RAT_H=36,SPEED_MAN=170,SPEED_RAT=150;
  const CASTLE={x:210,y:445,w:100,h:70,maxHealth:500,health:500};
  const BARRIER={x:175,y:405,w:170,h:120,maxHealth:200,health:0,active:false};
- let money=0,last=performance.now(),lastRat=performance.now(),lastCat=0,lastBear=0,ratsKilled=0,catsKilled=0; const units=[],bullets=[];
+ let money=0,last=performance.now(),lastRat=performance.now(),lastCat=0,lastBear=0,ratsKilled=0,catsKilled=0,bearsKilled=0; const units=[],bullets=[];
  function updateMoney(){moneyEl.textContent=money;spawnBtn.disabled=money<30;spawnBtn.textContent=money<30?'남자 소환 (30원 필요)':'남자 소환 (30원)';knightBtn.disabled=money<100;knightBtn.textContent=money<100?'기사 소환 (100원 필요)':'기사 소환 (100원)';soldierBtn.disabled=money<150;soldierBtn.textContent=money<150?'군인 소환 (150원 필요)':'군인 소환 (150원)';barrierBtn.disabled=BARRIER.active||money<100;barrierBtn.textContent=BARRIER.active?'성 보호 방벽 설치됨':money<100?'성 보호 방벽 구매 (100원 필요)':'성 보호 방벽 구매 (100원)'}
  function updateCount(){countEl.textContent=units.length}
  function updateCastle(){castleHpEl.textContent=Math.max(0,Math.ceil(CASTLE.health));castleBarFill.style.width=(Math.max(0,CASTLE.health)/CASTLE.maxHealth*100)+'%';castleBarFill.style.background=CASTLE.health<=100?'#e33':CASTLE.health<=250?'#f0a020':'#37d45b'}
@@ -73,12 +73,12 @@
  function spawnBear(){const p=randomEnemySpawn(64,58);addUnit('bear',p.x,p.y,(Math.random()-.5)*100,(Math.random()-.5)*100)}
  function bounceWalls(u){if(u.x<0){u.x=0;u.vx=Math.abs(u.vx)}if(u.y<0){u.y=0;u.vy=Math.abs(u.vy)}if(u.x>520-u.w){u.x=520-u.w;u.vx=-Math.abs(u.vx)}if(u.y>520-u.h){u.y=520-u.h;u.vy=-Math.abs(u.vy)}}
  function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
- function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();if(u.swordEl)u.swordEl.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled;money=Math.min(1000,money+10);updateMoney()}else if(u.type==='cat'){catsKilled++;catKillsEl.textContent=catsKilled;money=Math.min(1000,money+20);updateMoney()}else if(u.type==='bear'){money=Math.min(1000,money+30);updateMoney()}}}}
+ function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();if(u.swordEl)u.swordEl.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled;money=Math.min(1000,money+10);updateMoney()}else if(u.type==='cat'){catsKilled++;catKillsEl.textContent=catsKilled;money=Math.min(1000,money+20);updateMoney()}else if(u.type==='bear'){bearsKilled++;bearKillsEl.textContent=bearsKilled;money=Math.min(1000,money+30);updateMoney()}}}}
  function tick(now){
   const dt=Math.min((now-last)/1000,.04);last=now;
   if(now-lastRat>=1000){spawnRat();lastRat=now}
   if(ratsKilled>=5&&now-lastCat>=2000){spawnCat();lastCat=now}
-  if(catsKilled>=5&&now-lastBear>=5000){spawnBear();lastBear=now}
+  if(bearsKilled>=5&&now-lastBear>=3000){spawnBear();lastBear=now}
   for(const u of units){u.x+=u.vx*dt;u.y+=u.vy*dt;u.attackCooldown=Math.max(0,u.attackCooldown-dt);u.swordCooldown=Math.max(0,u.swordCooldown-dt);u.barrierCooldown=Math.max(0,(u.barrierCooldown||0)-dt);u.castleCooldown=Math.max(0,(u.castleCooldown||0)-dt);if(u.type==='knight')u.swordAngle=(u.swordAngle+dt*5)%(Math.PI*2);if(u.type==='soldier'&&u.attackCooldown<=0){fireBullet(u);u.attackCooldown=.2}bounceWalls(u)}
   for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;if(BARRIER.active&&overlaps(enemy,BARRIER)){if(enemy.barrierCooldown<=0){BARRIER.health=Math.max(0,BARRIER.health-enemy.damage);enemy.barrierCooldown=enemy.type==='bear'?3:1;updateBarrier();if(BARRIER.health<=0){BARRIER.active=false;updateBarrier();updateMoney()}}const cx=enemy.x+enemy.w/2,cy=enemy.y+enemy.h/2,bx=BARRIER.x+BARRIER.w/2,by=BARRIER.y+BARRIER.h/2,dx=cx-bx,dy=cy-by;if(Math.abs(dx)>Math.abs(dy)){enemy.x=dx<0?BARRIER.x-enemy.w:BARRIER.x+BARRIER.w;enemy.vx=dx<0?-Math.abs(enemy.vx||SPEED_RAT):Math.abs(enemy.vx||SPEED_RAT)}else{enemy.y=dy<0?BARRIER.y-enemy.h:BARRIER.y+BARRIER.h;enemy.vy=dy<0?-Math.abs(enemy.vy||SPEED_RAT):Math.abs(enemy.vy||SPEED_RAT)}continue}if(overlaps(enemy,CASTLE)&&enemy.castleCooldown<=0){CASTLE.health=Math.max(0,CASTLE.health-enemy.damage);enemy.castleCooldown=enemy.type==='bear'?3:1;enemy.vy=-Math.abs(enemy.vy||SPEED_RAT);updateCastle()}}
   // 모든 유닛은 서로 겹치지 않도록 밀어내고, 적끼리는 접촉 시 공격한다.
