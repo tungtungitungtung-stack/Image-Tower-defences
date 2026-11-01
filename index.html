@@ -56,7 +56,7 @@
  function spawnCat(){const x=40+Math.random()*380,y=420+Math.random()*50;addUnit('cat',x,y,(Math.random()-.5)*SPEED_MAN,(Math.random()-.5)*SPEED_MAN)}
  function bounceWalls(u){if(u.x<0){u.x=0;u.vx=Math.abs(u.vx)}if(u.y<0){u.y=0;u.vy=Math.abs(u.vy)}if(u.x>520-u.w){u.x=520-u.w;u.vx=-Math.abs(u.vx)}if(u.y>520-u.h){u.y=520-u.h;u.vy=-Math.abs(u.vy)}}
  function overlaps(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
- function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled}}}}
+ function removeDead(){for(let i=units.length-1;i>=0;i--){const u=units[i];if(u.health<=0){u.el.remove();u.hpLabel.remove();units.splice(i,1);if(u.type==='rat'){ratsKilled++;ratKillsEl.textContent=ratsKilled;money=Math.min(1000,money+10);updateMoney()}else if(u.type==='cat'){money=Math.min(1000,money+20);updateMoney()}}}}
  function tick(now){
   const dt=Math.min((now-last)/1000,.04);last=now;
   if(now-lastRat>=1000){spawnRat();lastRat=now}
