@@ -36,7 +36,7 @@
  const arena=document.getElementById('arena'),gate=document.getElementById('ratGate'),spawnBtn=document.getElementById('spawn'),clearBtn=document.getElementById('clear'),moneyEl=document.getElementById('money'),countEl=document.getElementById('count'),ratKillsEl=document.getElementById('ratKills');
  const MAN_SRC='https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png';
  const RAT_PAGE='https://kor.pngtree.com/freepng/rat-mouse-animal_19778482.html';
- const MAN_W=100,MAN_H=60,RAT_W=48,RAT_H=36,SPEED_MAN=85,SPEED_RAT=75;
+ const MAN_W=100,MAN_H=60,RAT_W=48,RAT_H=36,SPEED_MAN=170,SPEED_RAT=150;
  let money=0,last=performance.now(),lastRat=performance.now(),lastCat=0,ratsKilled=0; const units=[];
  function updateMoney(){moneyEl.textContent=money;spawnBtn.disabled=money<10;spawnBtn.textContent=money<10?'남자 소환 (10원 필요)':'남자 소환 (10원)'}
  function updateCount(){countEl.textContent=units.length}
