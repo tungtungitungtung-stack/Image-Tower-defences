@@ -22,7 +22,7 @@
 <div class="money">보유 원: <strong id="money">0</strong> / 1000원</div>
 <button id="spawn">남자 소환 (30원)</button>
 <button id="clear" class="secondary">모두 제거</button>
-<p class="small">0.1초마다 1원씩 획득해. 최대 1000원이며 남자 한 명 소환에 30원이 필요해.</p>
+<p class="small">0.3초마다 1원씩 획득해. 최대 1000원이며 남자 한 명 소환에 30원이 필요해.</p>
 <p>남자: 체력 10 · 공격력 1</p>
 <p>쥐: 체력 2 · 공격력 1 · 1초마다 출구에서 생성</p>
 <p>고양이: 체력 5 · 공격력 3 · 쥐 5마리 처치 시 한 번 등장</p>
@@ -40,7 +40,7 @@
  let money=0,last=performance.now(),lastRat=performance.now(),lastCat=0,ratsKilled=0; const units=[];
  function updateMoney(){moneyEl.textContent=money;spawnBtn.disabled=money<30;spawnBtn.textContent=money<30?'남자 소환 (30원 필요)':'남자 소환 (30원)'}
  function updateCount(){countEl.textContent=units.length}
- setInterval(()=>{money=Math.min(1000,money+1);updateMoney()},100);
+ setInterval(()=>{money=Math.min(1000,money+1);updateMoney()},300);
  function ratFallback(){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="96" height="72" viewBox="0 0 96 72"><path d="M18 47 Q-2 52 9 65" fill="none" stroke="#777" stroke-width="4" stroke-linecap="round"/><ellipse cx="48" cy="43" rx="29" ry="19" fill="#999"/><circle cx="71" cy="34" r="14" fill="#aaa"/><circle cx="64" cy="20" r="8" fill="#d99"/><circle cx="78" cy="22" r="7" fill="#d99"/><circle cx="76" cy="32" r="2.5" fill="#111"/><circle cx="85" cy="40" r="3" fill="#d77"/></svg>')}
  function addUnit(type,x,y,vx,vy){
   const el=type==='cat'?document.createElement('div'):document.createElement('img');el.className='unit '+type;
