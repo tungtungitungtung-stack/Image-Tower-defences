@@ -20,6 +20,8 @@
   input { width:100%; padding:9px; border-radius:7px; border:1px solid #536078; color:white; background:#151b27; }
   .small { color:#aeb8ca; font-size:12px; line-height:1.5; }
   #count { font-weight:bold; color:#9dc4ff; }
+  .money { margin:4px 0 8px; font-size:18px; font-weight:bold; color:#ffd66b; }
+  .money strong { font-size:24px; }
   @media (max-width:560px) { .panel { width:min(520px,calc(100vw - 24px)); } }
 </style>
 </head>
@@ -29,11 +31,12 @@
 <div class="layout">
   <div id="arena" aria-label="게임 경기장"></div>
   <section class="panel">
-    <button id="spawn">이미지 소환</button>
+    <div class="money">보유 원: <strong id="money">0</strong> / 1000원</div>
+    <button id="spawn">남자 소환 (10원)</button>
     <button id="clear" class="secondary">모두 제거</button>
     <label for="imageUrl">소환할 이미지의 직접 이미지 주소</label>
-    <input id="imageUrl" type="url" placeholder="https://.../image.png">
-    <p class="small">PNGwing 페이지 주소는 이미지 파일 주소가 아니라서 바로 표시되지 않을 수 있어. PNG 파일의 직접 주소를 넣으면 해당 이미지가 소환돼.</p>
+    <input id="imageUrl" type="url" value="https://www.pngall.com/wp-content/uploads/8/Man-PNG-Free-Download.png">
+    <p class="small">1초마다 10원이 자동으로 쌓여. 최대 보유 금액은 1000원이야. 남자 한 명을 소환할 때마다 10원이 사용돼.</p>
     <p>소환된 이미지: <span id="count">0</span></p>
     <p class="small">이미지들은 경기장 안에서 자동으로 움직이고, 테두리에 닿으면 방향을 바꿔.</p>
   </section>
@@ -45,11 +48,18 @@
   const clearBtn = document.getElementById('clear');
   const imageInput = document.getElementById('imageUrl');
   const countEl = document.getElementById('count');
+  const moneyEl = document.getElementById('money');
+  let money = 0;
+  function updateMoney(){ moneyEl.textContent = money; spawnBtn.disabled = money < 10; spawnBtn.textContent = money < 10 ? '남자 소환 (10원 필요)' : '남자 소환 (10원)'; }
+  setInterval(() => { money = Math.min(1000, money + 10); updateMoney(); }, 1000);
   const units = [];
   const SIZE_W = 100, SIZE_H = 60, SPEED = 85;
   let last = performance.now();
   function updateCount(){ countEl.textContent = units.length; }
   function spawn(){
+    if (money < 10) return;
+    money -= 10;
+    updateMoney();
     const img = document.createElement('img');
     img.className = 'unit';
     const src = imageInput.value.trim();
@@ -72,7 +82,8 @@
       if(u.y > 520-SIZE_H){u.y=520-SIZE_H;u.vy=-Math.abs(u.vy);}
       u.el.style.left = u.x+'px'; u.el.style.top = u.y+'px';
     }
-    requestAnimationFrame(tick);
+    updateMoney();
+  requestAnimationFrame(tick);
   }
   spawnBtn.addEventListener('click',spawn);
   clearBtn.addEventListener('click',()=>{for(const u of units)u.el.remove();units.length=0;updateCount();});
