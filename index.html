@@ -42,7 +42,8 @@
  const SOLDIER_SRC='https://pngimg.com/uploads/soldier/soldier_PNG16044.png';
   const ARCHER_SRC='https://png.pngtree.com/png-vector/20250607/ourmid/pngtree-experienced-archer-aiming-at-target-isolated-on-transparent-background-png-image_16483508.png';
  const BUSINESSMAN_SRC='https://www.pngall.com/wp-content/uploads/2018/04/Businessman-Transparent.png';
- const DOCTOR_SRC='./assets/doctor.jpg';\n const BOMB_SRC='https://www.freeiconspng.com/thumbs/bomb-png/high-resolution-bomb-png-clipart-2.png';
+ const DOCTOR_SRC='./assets/doctor.jpg';
+ const BOMB_SRC='https://www.freeiconspng.com/thumbs/bomb-png/high-resolution-bomb-png-clipart-2.png';
  const RAT_PAGE='https://kor.pngtree.com/freepng/rat-mouse-animal_19778482.html';
  const MAN_W=100,MAN_H=60,KNIGHT_W=88,KNIGHT_H=88,SOLDIER_W=64,SOLDIER_H=64,ARCHER_W=64,ARCHER_H=64,RAT_W=48,RAT_H=36,SPEED_MAN=170,SPEED_RAT=150;
  const CASTLE={x:210,y:445,w:100,h:70,maxHealth:500,health:500};
@@ -63,7 +64,7 @@
   else {el.alt=type==='man'?'남자':type==='knight'?'기사':type==='soldier'?'군인':type==='archer'?'아처':type==='businessman'?'사업가':type==='doctor'?'의사':type==='bomb'?'폭탄':'쥐';el.src=type==='man'?MAN_SRC:type==='knight'?KNIGHT_SRC:type==='soldier'?SOLDIER_SRC:type==='archer'?ARCHER_SRC:type==='businessman'?BUSINESSMAN_SRC:type==='doctor'?DOCTOR_SRC:type==='bomb'?BOMB_SRC:RAT_PAGE;if(type==='rat')el.onerror=()=>{el.onerror=null;el.src=ratFallback()}}
   const hpLabel=document.createElement('div');hpLabel.className='hp';hpLabel.textContent=type==='man'?'10':type==='knight'?'15':type==='soldier'?'20':type==='archer'?'10':type==='businessman'?'10':type==='doctor'?'10':type==='bomb'?'1':type==='cat'?'5':type==='bear'?'20':'2';
   const swordEl=type==='knight'?document.createElement('div'):null;if(swordEl){swordEl.className='sword';swordEl.textContent='🗡️';arena.append(swordEl)}arena.append(el,hpLabel);
-  const u={type,el,hpLabel,swordEl,x,y,vx,vy,w:type==='man'?MAN_W:type==='knight'?KNIGHT_W:type==='soldier'?SOLDIER_W:type==='archer'?ARCHER_W:type==='businessman'?64:type==='doctor'?56:type==='bomb'?56:type==='cat'?56:type==='bear'?64:RAT_W,h:type==='man'?MAN_H:type==='knight'?KNIGHT_H:type==='soldier'?SOLDIER_H:type==='archer'?ARCHER_H:type==='businessman'?64:type==='doctor'?56:type==='bomb'?56:type==='cat'?44:type==='bear'?58:RAT_H,health:type==='man'?10:type==='knight'?15:type==='soldier'?20:type==='archer'?10:type==='businessman'?10:type==='doctor'?10:type==='bomb'?1:type==='cat'?5:type==='bear'?20:2,maxHealth: type==='man'?10:type==='knight'?15:type==='soldier'?20:type==='archer'?10:type==='businessman'?10:type==='doctor'?10:type==='cat'?5:type==='bear'?20:2,damage:type==='cat'?3:type==='bear'?10:type==='knight'?5:1,attackCooldown:0,swordAngle:0,swordCooldown:0,incomeTimer:0};
+  const u={type,el,hpLabel,swordEl,x,y,vx,vy,w:type==='man'?MAN_W:type==='knight'?KNIGHT_W:type==='soldier'?SOLDIER_W:type==='archer'?ARCHER_W:type==='businessman'?64:type==='doctor'?56:type==='bomb'?56:type==='cat'?56:type==='bear'?64:RAT_W,h:type==='man'?MAN_H:type==='knight'?KNIGHT_H:type==='soldier'?SOLDIER_H:type==='archer'?ARCHER_H:type==='businessman'?64:type==='doctor'?56:type==='bomb'?56:type==='cat'?44:type==='bear'?58:RAT_H,health:type==='man'?10:type==='knight'?15:type==='soldier'?20:type==='archer'?10:type==='businessman'?10:type==='doctor'?10:type==='bomb'?1:type==='cat'?5:type==='bear'?20:2,maxHealth: type==='man'?10:type==='knight'?15:type==='soldier'?20:type==='archer'?10:type==='businessman'?10:type==='doctor'?10:type==='bomb'?1:type==='cat'?5:type==='bear'?20:2,damage:type==='cat'?3:type==='bear'?10:type==='knight'?5:1,attackCooldown:0,swordAngle:0,swordCooldown:0,incomeTimer:0};
   units.push(u);position(u);updateCount();return u;
  }
  function position(u){u.el.style.left=u.x+'px';u.el.style.top=u.y+'px';u.hpLabel.textContent=String(Math.max(0,Math.ceil(u.health)));u.hpLabel.style.left=(u.x+u.w/2)+'px';u.hpLabel.style.top=Math.max(0,u.y-13)+'px';if(u.swordEl){const cx=u.x+u.w/2,cy=u.y+u.h/2,r=43,angle=u.swordAngle;u.swordEl.style.left=(cx+Math.cos(angle)*r)+'px';u.swordEl.style.top=(cy+Math.sin(angle)*r)+'px';u.swordEl.style.transform='translate(-50%,-50%) rotate('+(angle+Math.PI/2)+'rad)'}}
@@ -72,7 +73,8 @@
  function spawnSoldier(){if(money<150)return;money-=150;updateMoney();const a=Math.random()*Math.PI*2;addUnit('soldier',Math.random()*(520-SOLDIER_W),Math.random()*(520-SOLDIER_H),Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
   function spawnArcher(){if(money<75)return;money-=75;updateMoney();const a=Math.random()*Math.PI*2;addUnit('archer',Math.random()*(520-ARCHER_W),Math.random()*(520-ARCHER_H),Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
  function spawnBusinessman(){if(money<30)return;money-=30;updateMoney();addUnit('businessman',Math.random()*456,Math.random()*456,0,0)}
- function spawnDoctor(){if(bearsKilled<1||money<50)return;money-=50;updateMoney();addUnit('doctor',Math.random()*464,Math.random()*464,0,0)}\n function spawnBomb(){if(money<30)return;money-=30;updateMoney();const a=Math.random()*Math.PI*2;addUnit('bomb',Math.random()*464,Math.random()*464,Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
+ function spawnDoctor(){if(bearsKilled<1||money<50)return;money-=50;updateMoney();addUnit('doctor',Math.random()*464,Math.random()*464,0,0)}
+ function spawnBomb(){if(money<30)return;money-=30;updateMoney();const a=Math.random()*Math.PI*2;addUnit('bomb',Math.random()*464,Math.random()*464,Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
  function fireBullet(soldier){let target=null,best=Infinity;for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;const d=Math.hypot(enemy.x+enemy.w/2-(soldier.x+soldier.w/2),enemy.y+enemy.h/2-(soldier.y+soldier.h/2));if(d<best){best=d;target=enemy}}if(!target)return;const sx=soldier.x+soldier.w/2,sy=soldier.y+soldier.h/2,dx=target.x+target.w/2-sx,dy=target.y+target.h/2-sy,d=Math.hypot(dx,dy)||1,el=document.createElement('div');el.className='bullet';arena.append(el);bullets.push({x:sx,y:sy,vx:dx/d*560,vy:dy/d*560,el,damage:1})}
  function fireArrow(archer){let target=null,best=Infinity;for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;const d=Math.hypot(enemy.x+enemy.w/2-(archer.x+archer.w/2),enemy.y+enemy.h/2-(archer.y+archer.h/2));if(d<best){best=d;target=enemy}}if(!target)return;const sx=archer.x+archer.w/2,sy=archer.y+archer.h/2,dx=target.x+target.w/2-sx,dy=target.y+target.h/2-sy,d=Math.hypot(dx,dy)||1,el=document.createElement('div');el.className='arrow';el.textContent='➶';arena.append(el);bullets.push({x:sx,y:sy,vx:dx/d*560,vy:dy/d*560,el,damage:1,bleed:true})}
   function spawnRat(){const p=randomEnemySpawn(RAT_W,RAT_H);addUnit('rat',p.x,p.y,(Math.random()-.5)*40,SPEED_RAT)}
@@ -107,7 +109,8 @@
  soldierBtn.addEventListener('click',spawnSoldier);
   archerBtn.addEventListener('click',spawnArcher);
  businessmanBtn.addEventListener('click',spawnBusinessman);
- doctorBtn.addEventListener('click',spawnDoctor);\n bombBtn.addEventListener('click',spawnBomb);
+ doctorBtn.addEventListener('click',spawnDoctor);
+ bombBtn.addEventListener('click',spawnBomb);
  barrierBtn.addEventListener('click',buyBarrier);
  knightBtn.addEventListener('click',spawnKnight);
  clearBtn.addEventListener('click',()=>{for(const u of units){u.el.remove();u.hpLabel.remove();if(u.swordEl)u.swordEl.remove()}units.length=0;updateCount()});
