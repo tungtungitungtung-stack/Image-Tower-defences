@@ -85,7 +85,8 @@
  function spawnBomb(){if(money<30)return;money-=30;updateMoney();const a=Math.random()*Math.PI*2;addUnit('bomb',Math.random()*(WORLD_SIZE-56),Math.random()*(WORLD_SIZE-56),Math.cos(a)*SPEED_MAN,Math.sin(a)*SPEED_MAN)}
  function fireBullet(soldier){let target=null,best=Infinity;for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;const d=Math.hypot(enemy.x+enemy.w/2-(soldier.x+soldier.w/2),enemy.y+enemy.h/2-(soldier.y+soldier.h/2));if(d<best){best=d;target=enemy}}if(!target)return;const sx=soldier.x+soldier.w/2,sy=soldier.y+soldier.h/2,dx=target.x+target.w/2-sx,dy=target.y+target.h/2-sy,d=Math.hypot(dx,dy)||1,el=document.createElement('div');el.className='bullet';world.append(el);bullets.push({x:sx,y:sy,vx:dx/d*560,vy:dy/d*560,el,damage:1})}
  function fireArrow(archer){let target=null,best=Infinity;for(const enemy of units){if(enemy.type!=='rat'&&enemy.type!=='cat'&&enemy.type!=='bear')continue;const d=Math.hypot(enemy.x+enemy.w/2-(archer.x+archer.w/2),enemy.y+enemy.h/2-(archer.y+archer.h/2));if(d<best){best=d;target=enemy}}if(!target)return;const sx=archer.x+archer.w/2,sy=archer.y+archer.h/2,dx=target.x+target.w/2-sx,dy=target.y+target.h/2-sy,d=Math.hypot(dx,dy)||1,el=document.createElement('div');el.className='arrow';el.textContent='➶';world.append(el);bullets.push({x:sx,y:sy,vx:dx/d*560,vy:dy/d*560,el,damage:1,bleed:true})}
-  function spawnEnemy(type,w,h,speed){const x=40+Math.random()*(WORLD_SIZE-w-80),y=35+Math.random()*90,tx=CASTLE.x+CASTLE.w/2,ty=CASTLE.y+CASTLE.h/2,dx=tx-(x+w/2),dy=ty-(y+h/2),angle=Math.atan2(dy,dx)+(Math.random()-.5)*.55;addUnit(type,x,y,Math.cos(angle)*speed,Math.sin(angle)*speed)}\n  function spawnRat(){spawnEnemy('rat',RAT_W,RAT_H,SPEED_RAT)}
+  function spawnEnemy(type,w,h,speed){const x=40+Math.random()*(WORLD_SIZE-w-80),y=35+Math.random()*90,tx=CASTLE.x+CASTLE.w/2,ty=CASTLE.y+CASTLE.h/2,dx=tx-(x+w/2),dy=ty-(y+h/2),angle=Math.atan2(dy,dx)+(Math.random()-.5)*.55;addUnit(type,x,y,Math.cos(angle)*speed,Math.sin(angle)*speed)}
+  function spawnRat(){spawnEnemy('rat',RAT_W,RAT_H,SPEED_RAT)}
  function spawnCat(){spawnEnemy('cat',56,44,SPEED_MAN)}
  function spawnBear(){spawnEnemy('bear',64,58,120)}
  function bounceWalls(u){if(u.x<0){u.x=0;u.vx=Math.abs(u.vx)}if(u.y<0){u.y=0;u.vy=Math.abs(u.vy)}if(u.x>WORLD_SIZE-u.w){u.x=WORLD_SIZE-u.w;u.vx=-Math.abs(u.vx)}if(u.y>WORLD_SIZE-u.h){u.y=WORLD_SIZE-u.h;u.vy=-Math.abs(u.vy)}}
@@ -113,7 +114,8 @@
   for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.el.style.left=(b.x-4)+'px';b.el.style.top=(b.y-4)+'px';let hit=false;for(const enemy of units){if((enemy.type==='rat'||enemy.type==='cat'||enemy.type==='bear')&&b.x>=enemy.x&&b.x<=enemy.x+enemy.w&&b.y>=enemy.y&&b.y<=enemy.y+enemy.h){enemy.health-=b.damage;if(b.bleed){enemy.bleedTime=3;enemy.bleedTick=1}hit=true;break}}if(hit||b.x<0||b.x>WORLD_SIZE||b.y<0||b.y>WORLD_SIZE){b.el.remove();bullets.splice(i,1)}}
   removeDead();if(CASTLE.health<=0){endGame();return}requestAnimationFrame(tick)
  }
- function endGame(){if(gameOver)return;gameOver=true;clearInterval(incomeTimer);document.getElementById('gameOver').classList.add('show')}\n  document.getElementById('restartGame').addEventListener('click',()=>location.reload());\n  upgradeIncomeBtn.addEventListener('click',buyIncomeUpgrade);
+ function endGame(){if(gameOver)return;gameOver=true;clearInterval(incomeTimer);document.getElementById('gameOver').classList.add('show')}
+  document.getElementById('restartGame').addEventListener('click',()=>location.reload());\n  upgradeIncomeBtn.addEventListener('click',buyIncomeUpgrade);
  spawnBtn.addEventListener('click',spawnMan);
  soldierBtn.addEventListener('click',spawnSoldier);
   archerBtn.addEventListener('click',spawnArcher);
