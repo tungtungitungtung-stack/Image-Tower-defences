@@ -115,7 +115,8 @@
   removeDead();if(CASTLE.health<=0){endGame();return}requestAnimationFrame(tick)
  }
  function endGame(){if(gameOver)return;gameOver=true;clearInterval(incomeTimer);document.getElementById('gameOver').classList.add('show')}
-  document.getElementById('restartGame').addEventListener('click',()=>location.reload());\n  upgradeIncomeBtn.addEventListener('click',buyIncomeUpgrade);
+  document.getElementById('restartGame').addEventListener('click',()=>location.reload());
+  upgradeIncomeBtn.addEventListener('click',buyIncomeUpgrade);
  spawnBtn.addEventListener('click',spawnMan);
  soldierBtn.addEventListener('click',spawnSoldier);
   archerBtn.addEventListener('click',spawnArcher);
